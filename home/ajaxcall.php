@@ -54,7 +54,7 @@ if(isset($_POST['escrw'])){
                     }else{
                         echo 'Cannot add product, try again';
                 }
-                            }
+              }
             }
        }
     
@@ -79,13 +79,13 @@ if(isset($_POST['register'])){
 }
 
     
-if(isset($_POST['possadd']) && isset($_POST['pmethod'])){
+if(isset($_POST['possadd'])){
     $padd = $_POST['paddfig'];
     if($padd=='postruef'){
     $trigg = fetch_escrow();
     if ($trigg->num_rows > 0) {
    while ($fetch = $trigg->fetch_assoc()) {
-        $tid = 'trstn'.date("dmyhi");
+        $tid = 'INV-'.date("dmyhi");
         $productid = $fetch['productid'];
         $productname = $fetch['productname'];
         $productdescription = $fetch['productdescription'];
@@ -93,37 +93,36 @@ if(isset($_POST['possadd']) && isset($_POST['pmethod'])){
         $qty = $fetch['qty'];
         $productsize = $fetch['productsize'];
         $username = $fetch['username'];
-        $dateadded = date("F d, Y h:i:sa");
-        $validatedate = date("FdY");
-        $amount = $productprice * $qty; 
-        $pmethod = $_POST['pmethod'];
-        $status = 'sold';
-        $posad = pos_escrow_new($tid,$productid,$productname,$productdescription,$productprice,$productsize,$qty,$username,$amount,$pmethod,$status,$dateadded,$validatedate);
-        $fff = fetch_quantity($productid);
-		if(!empty($pmethod)){
-			   if ($fff->num_rows > 0) {
-					while ($fetch = $fff->fetch_assoc()) {
-						$qq = $fetch['productquantity'];
-						$productquantity = $qq - $qty;
-						$usales = update_sales($productquantity,$productid);
-						if($usales==true){
-							deleteAll();
+		if(isset($_POST['pmethod'])){
+			$dateadded = date("F d, Y h:i:sa");
+			$validatedate = date("FdY");
+			$amount = $productprice * $qty; 
+			$pmethod = $_POST['pmethod'];
+			$status = 'sold';
+			$posad = pos_escrow_new($tid,$productid,$productname,$productdescription,$productprice,$productsize,$qty,$username,$amount,$pmethod,$status,$dateadded,$validatedate);
+			$fff = fetch_quantity($productid);
+				if ($fff->num_rows > 0) {
+						while ($fetch = $fff->fetch_assoc()) {
+							$qq = $fetch['productquantity'];
+							$productquantity = $qq - $qty;
+							$usales = update_sales($productquantity,$productid);
+							if($usales==true){
+								deleteAll();
+							}
 						}
-					}
-			   }
-		}else{
-			echo 'Payment Method not defined!';
-		}
-   }
-        if($posad==true && $usales==true){
-            echo 'Order complete';
-        }else{
-            echo 'Cannot checkout, try again';
-        }
-     }
-  }
-}else{
-	echo 'Invalid';
+				}
+			}else{
+				echo 'Payment Method not defined!';
+			}
+   		}	
+		   if($posad==true && $usales == true){
+			echo 'Order complete';
+				}
+			else{
+				echo 'Cannot checkout, try again';
+			}
+    	 }
+  	}
 }
 if(isset($_POST['editpr'])){
 	$productid = $_POST['productid'];

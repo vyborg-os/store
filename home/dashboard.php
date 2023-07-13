@@ -1,7 +1,14 @@
 <?php
 include_once('index.php');
 include_once('../model/controller.php');
-
+$username = $_SESSION['username'];
+$val = getchkAdminUsr($username);
+    if($val!=true){
+        //session_destroy();
+        //header("Location: authorize");
+        include_once('authorize.php');
+        exit;
+    }
 ?>
 <link rel="stylesheet" href="../assets/datatable/datatables.css">
 <link rel="stylesheet" href="../assets/vendor/toastr/toastr.min.css">

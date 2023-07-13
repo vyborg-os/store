@@ -185,8 +185,10 @@ include_once('../model/controller.php');
                                     <div class="row clearfix">
                                         <input type="hidden" name="productid" value="<?php echo $fetch['productid']; ?>">
                                             <div class="col-lg-12 col-md-12">
+                                                <legend><?php echo $fetch['productname']; ?></legend>
+                                                <p><?php echo $fetch['productdescription']; ?></p>
                                             <div class="form-group">
-                                                <input type="text" class="form-control" placeholder="Product Name" name="productname" value="<?php echo $fetch['productname']; ?>">
+                                                <input type="hidden" class="form-control" placeholder="Product Name" name="productname" value="<?php echo $fetch['productname']; ?>">
                                             </div>
 											</div>
                                         <div class="col-lg-12 col-md-12">
@@ -262,7 +264,9 @@ include_once('../model/controller.php');
                                         <input type="hidden" name="productid" value="<?php echo $fetch['productid']; ?>">
                                             <div class="col-lg-12 col-md-12">
                                             <div class="form-group">
-                                                <input type="text" class="form-control" placeholder="Product Name" name="productname" value="<?php echo $fetch['productname']; ?>">
+                                                <legend><?php echo $fetch['productname']; ?></legend>
+                                                <p><?php echo $fetch['productdescription']; ?></p>
+                                                <input type="hidden" class="form-control" placeholder="Product Name" name="productname" value="<?php echo $fetch['productname']; ?>">
                                             </div>
 											</div>
                                        <div class="col-lg-12 col-md-12">
@@ -277,7 +281,7 @@ include_once('../model/controller.php');
 											</div>
 											<div class="col-lg-12 col-md-12">
 											 <div class="form-group">
-                                                <input type="hidden" class="form-control" placeholder="Product Quantity" name="productsize"  value="<?php echo $fetch['productsize']; ?>" required>
+                                                <input type="hidden" class="form-control" placeholder="Product Size" name="productsize"  value="<?php echo $fetch['productsize']; ?>" required>
                                             </div>
                                                 <div class="col-lg-12 col-md-12">
 											 <div class="form-group">

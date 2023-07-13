@@ -53,16 +53,13 @@ include_once('model/controller.php');
 ?>
 <!doctype html>
 <html lang="en">
-
-
-<!-- Mirrored from nsdbytes.com/template/oculux/html/page-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 02 Dec 2020 11:42:26 GMT -->
 <head>
-<title>BitesFarm | Login</title>
+<title><?php echo SITE_NAME; ?> | Login</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-<meta name="description" content="Oculux Bootstrap 4x admin is super flexible, powerful, clean &amp; modern responsive admin dashboard with unlimited possibilities.">
-<meta name="author" content="GetBootstrap, design by: puffintheme.com">
+<meta name="description" content="Store Management System">
+<meta name="author" content="Developed by Vyborg">
 
 <link rel="icon" href="favicon.ico" type="image/x-icon">
 <!-- VENDOR CSS -->
@@ -134,6 +131,4 @@ include_once('model/controller.php');
 <script src="assets/bundles/vendorscripts.bundle.js"></script>
 <script src="assets/bundles/mainscripts.bundle.js"></script>
 </body>
-
-<!-- Mirrored from nsdbytes.com/template/oculux/html/page-login.html by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 02 Dec 2020 11:42:26 GMT -->
 </html>

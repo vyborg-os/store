@@ -20,23 +20,18 @@ function LoadDataNew($header)
     //$this->Image('logo.png',10,6,30);
     // Title
     $this->SetFont('Arial','B',8);
-    $this->Cell(2,10,'Bites Multi Global Farm');
+    $this->Cell(2,10,SITE_NAME);
      $this->Cell(30,6);
     $this->Cell(30,6);
      $this->SetFont('Arial','',6);
     $this->Cell(20,2,'X close','','','',false,"http://localhost/store/home/pos");
     // Line break
     $this->Ln(4);
-    $this->Cell(5,10,'Address: Gado Nasko Road 2-2,','C');
+    $this->SetFont('Arial','I',6);
+    $this->Cell(5,10,SITE_ADDR,'C');
     $this->Ln(3);
-     $this->Cell(4,6);
-     $this->Cell(7,10,'Kubwa, FCT-Abuja','C');
-     $this->Ln(4);
-    $this->SetFont('Arial','',6);
-     $this->Cell(50,10,'Tel: 08035909133, 09123929217,','C');
-    $this->Ln(3);
-    $this->Cell(4,6);
-    $this->Cell(50,10,' 08130169861','C');
+    $this->SetFont('Arial','B',6);
+     $this->Cell(50,10,SITE_PHONE,'C');
     $this->Ln(10);
     $this->Cell(4,6);
      $this->Cell(25,10,'Receipt',1,0,'C');

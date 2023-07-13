@@ -1,6 +1,25 @@
 <?php
-	//Require config config file
+//Require config config file
 include_once ('config.php');
+	$stmt = $mysqli->prepare("SELECT * FROM settings ORDER BY id DESC LIMIT 1");
+	$stmt->execute();
+	$result = $stmt->get_result();
+	$data = $result->fetch_assoc();
+	$site_name = $data['site_name'];
+	$site_address = $data['site_address'];
+	$site_phone = $data['site_phone'];
+	//$site_mail = $data['site_mail'];
+	define('DS', DIRECTORY_SEPARATOR);
+
+	/////site name
+	define('SITE_NAME', $site_name);
+	define('SITE_ADDR', $site_address);
+	define('SITE_PHONE', $site_phone);
+
+	/////App Root
+	define('APP_ROOT', dirname(dirname(__FILE__)));
+	define('URL_ROOT', '/store');
+	define('URL_SUBFOLDER','store');
 
     function secure($string){
 		$sec = htmlentities($string);
@@ -71,6 +90,24 @@ include_once ('config.php');
  
 		return $result;
 	}
+	function char_tbl($table,$created_at_month,$created_at_year){
+		require 'config.php';
+		$stmt = $mysqli->prepare("SELECT count(*) AS total FROM ".$table." WHERE date_format(date,'%m') = $created_at_month AND date_format(date,'%Y') = $created_at_year");
+		$stmt->execute();
+		$res = $stmt->get_result();
+		$re = $res->fetch_assoc();
+		
+		return $re["total"];
+	}
+	function char_tbl_($table,$created_at_year){
+		require 'config.php';
+		$stmt = $mysqli->prepare("SELECT count(*) AS total FROM ".$table." WHERE date_format(date,'%Y') = $created_at_year");
+		$stmt->execute();
+		$res = $stmt->get_result();
+		$re = $res->fetch_assoc();
+		
+		return $re["total"];
+	}
 	function fetchrecordpt(){
 		//Require Databse config file
 		require 'config.php';
@@ -115,6 +152,22 @@ include_once ('config.php');
 		$result = $stmt->get_result();
 		return $result;
 	}
+	function getchkAdminUsr($username){
+		//Require Databse config file
+		require 'config.php';
+        
+		//fetch all user
+		$stmt = $mysqli->prepare("SELECT * FROM admin WHERE username = '$username'");
+		$stmt->execute();
+		$result = $stmt->get_result();
+		$data = $result->fetch_assoc();
+		$privilege = $data['access'];
+		if($privilege=='1'){
+			return true;
+		}else{
+			return false;
+		}
+	}
    function getAdminUsrz($username){
 		//Require Databse config file
 		require 'config.php';
@@ -157,21 +210,6 @@ include_once ('config.php');
 		//add admin
 		$stmt = $mysqli->prepare("INSERT INTO categories(category) VALUES(?)");
 		$stmt->bind_param("s",$category);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-function add_date_spec($username,$log_date,$com_date,$click_date,$spon_date,$post_date,$ref_date,$rup_date){
-		//Require Databse config file
-		require 'config.php';
-
-		//add admin
-		$stmt = $mysqli->prepare("INSERT INTO withdraw(username,log_date,com_date,click_date,spon_date,post_date,ref_date,rup_date) VALUES(?,?,?,?,?,?,?,?)");
-		$stmt->bind_param("ssssssss",$username,$log_date,$com_date,$click_date,$spon_date,$post_date,$ref_date,$rup_date);
 		if($stmt->execute()){
 			return true;
 		}else{
@@ -413,94 +451,12 @@ function fetch_escrow(){
 		return $result;
 	}
 ///////////////////end dunno ///////////////////////////////////////////////
-  function fetch_news_stat($table,$status){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM ".$table." WHERE status='$status' ORDER BY id DESC");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
- function fetch_usr($table,$username){
+   function fetch_usr($table,$username){
 		//Require Databse config file
 		require 'config.php';
 		//fetch all user
 		$stmt = $mysqli->prepare("SELECT * FROM ".$table." WHERE username='$username'");
 		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-    function fetch_level($table,$level){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM ".$table." WHERE level='$level'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-   function fetchSpec($table,$url){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM ".$table." WHERE url = '$url'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
- function updatePoints($table,$username,$points){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET points = '$points' WHERE username = '$username'");
-        $stmt->bind_param("ssi",$table,$username,$points);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_lvl($table,$username,$level,$ldue){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET level = '$level',ldue = '$ldue' WHERE username = '$username'");
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_click($table,$username,$open_post){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET open_post = '$open_post' WHERE username = '$username'");
-        $stmt->bind_param("ssi",$table,$username,$open_post);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_com($table,$username,$comment){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET comment = '$comment' WHERE username = '$username'");
-        $stmt->bind_param("ssi",$table,$username,$comment);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
 		$result = $stmt->get_result();
 		return $result;
 	}
@@ -531,582 +487,8 @@ function update_log($table,$username,$login){
 		$result = $stmt->get_result();
 		return $result;
 	}
-function update_spost($table,$username,$spon_post){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET spost = '$spon_post' WHERE username = '$username'");
-        $stmt->bind_param("ssi",$table,$username,$spon_post);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-	function add_siteset($about,$description,$terms,$service,$site_phone,$site_mail,$image_id,$image,$status){
-		//Require Databse config file
-		require 'config.php';
 
-		//add admin
-		$stmt = $mysqli->prepare("INSERT INTO site(about,description,terms,service,site_phone,site_mail,image_id,image,status) VALUES(?,?,?,?,?,?,?,?,?)");
-		$stmt->bind_param("sssssssss",$about,$description,$terms,$service,$site_phone,$site_mail,$image_id,$image,$status);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-	function update_site_details($about,$description,$terms,$service,$site_phone,$site_mail,$id){
-		//Require Databse config file
-		require 'config.php';
-		//set outcome to won
-		$stmt = $mysqli->prepare("UPDATE site SET about = ?, description = ?, terms = ?, service = ?, site_phone = ?, site_mail = ? WHERE id = ?");
-        $stmt->bind_param("ssssssi",$about,$description,$terms,$service,$site_phone,$site_mail,$id);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_outcome_won($outcome,$id){
-		//Require Databse config file
-		require 'config.php';
-		//set outcome to won
-		$stmt = $mysqli->prepare("UPDATE predict SET outcome = ? WHERE id = ?");
-        $stmt->bind_param("si",$outcome,$id);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_outcome_lost($outcome,$id){
-		//Require Databse config file
-		require 'config.php';
-		//set outcome to lost
-		$stmt = $mysqli->prepare("UPDATE predict SET outcome = ? WHERE id = ?");
-        $stmt->bind_param("si",$outcome,$id);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-	function update_sub($usertype,$id){
-		//Require Databse config file
-		require 'config.php';
-		//set outcome to lost
-		$stmt = $mysqli->prepare("UPDATE users SET usertype = ? WHERE id = ?");
-        $stmt->bind_param("si",$usertype,$id);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-	 function fetch_user_sub(){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM users WHERE usertype = 'subscribed'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-	function fetch_site_details(){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM site ");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-	function fetch_user_free(){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM users WHERE usertype != 'subscribed'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_referal($table,$username,$referred){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET referred = '$referred' WHERE username = '$username'");
-        $stmt->bind_param("ssi",$table,$username,$referred);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_refup($table,$username,$r_upgrade){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET r_upgrade = '$r_upgrade' WHERE username = '$username'");
-        $stmt->bind_param("ssi",$table,$username,$referred);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function points_f($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * ".$table." WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function points_ff($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT points FROM activities WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function comments_ff($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT comments FROM activities WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function click_ff($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT open_post FROM activities WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function sponpost_ff($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT spon_post FROM activities WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function post_ff($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT post_news FROM activities WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function ref_ff($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT referred FROM activities WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function refup_ff($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT r_upgrade FROM activities WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function login_ff($username){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT login FROM activities WHERE username='$username'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-///posts
-function add_news($news_id,$news_title,$news_content,$image, $image_id,$posted_by,$category,$url,$status){
-		//Require Databse config file
-		require 'config.php';
-
-		//adding news
-		$stmt = $mysqli->prepare("INSERT INTO news(news_id,news_title,  news_content, image, image_id, posted_by,category,url,status) VALUES(?,?,?,?,?,?,?,?,?)");
-		$stmt->bind_param("sssssssss",$news_id,$news_title,$news_content,$image,$image_id,$posted_by,$category,$url,$status);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-function add_ads($ads_id,$ads_title, $image, $image_id,$due,$ads_content,$url,$posted_by,$status){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("INSERT INTO sponsor(ads_id,ads_title, image,image_id,due, ads_content,url,posted_by,status) VALUES(?,?,?,?,?,?,?,?,?)");
-		$stmt->bind_param("sssssssss",$ads_id,$ads_title,$image,$image_id,$due,$ads_content,$url,$posted_by,$status);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-function add_site_settings($site_title,$site_description,$site_email,$site_logo,$logo_id,$fb_link,$instagram_link,$twitter_link,$site_number){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("INSERT INTO site(site_title,site_description,site_email,image,logo_id,fb_link,instagram_link,twitter_link,site_number) VALUES(?,?,?,?,?,?,?,?,?)");
-		$stmt->bind_param("sssssssss",$site_title,$site_description,$site_email,$site_logo,$logo_id,$fb_link,$instagram_link,$twitter_link,$site_number);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_site_settings($id,$site_title,$site_description,$site_email,$site_logo,$logo_id,$fb_link,$instagram_link,$twitter_link,$site_number){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("UPDATE site SET site_title = '$site_title',site_description = '$site_description',site_email = '$site_email',image = '$site_logo',logo_id = '$logo_id',fb_link = '$fb_link',instagram_link = '$instagram_link',twitter_link = '$twitter_link',site_number = '$site_number' WHERE id = '$id'");
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-
-function add_coupon_page($couponpage,$whatsapplink){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("INSERT INTO couponpage(couponpage,whatsapplink) VALUES(?,?)");
-		$stmt->bind_param("ss",$couponpage,$whatsapplink);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-function add_testimony($testifier,$testimony){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("INSERT INTO testimonypage(testifier,testimony) VALUES(?,?)");
-		$stmt->bind_param("ss",$testifier,$testimony);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-	//functions location for the system
-		//functions location for the system
-			//functions location for the system
-				//functions location for the system
-					//functions location for the system
-	function add_predict($teama,$teamb,$league,$tips,$odd,$postype,$posted_date,$outcome){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("INSERT INTO predict(teama,teamb,league,tips,odd,postype,posted_date,outcome) VALUES(?,?,?,?,?,?,?,?)");
-		$stmt->bind_param("ssssssss",$teama,$teamb,$league,$tips,$odd,$postype,$posted_date,$outcome);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-	function predict_pend_fetch(){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM predict WHERE outcome ='pending'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-	function predict_true_fetch(){
-		//Require Databse config file
-		require 'config.php';
-
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM predict WHERE outcome !='pending'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-//24hrs checking for points
-function update_logdate($table,$username,$log_date){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET log_date = '$log_date' WHERE username = '$username'");
-        $stmt->bind_param("sss",$table,$username,$log_date);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_comdate($table,$username,$com_date){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET com_date = '$com_date' WHERE username = '$username'");
-        $stmt->bind_param("sss",$table,$username,$com_date);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_clickdate($table,$username,$click_date){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET click_date = '$click_date' WHERE username = '$username'");
-        $stmt->bind_param("sss",$table,$username,$click_date);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_spondate($table,$username,$spon_date){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET spon_date = '$spon_date' WHERE username = '$username'");
-        $stmt->bind_param("sss",$table,$username,$spon_date);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_postdate($table,$username,$post_date){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET post_date = '$post_date' WHERE username = '$username'");
-        $stmt->bind_param("sss",$table,$username,$post_date);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_refdate($table,$username,$ref_date){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET ref_date = '$ref_date' WHERE username = '$username'");
-        $stmt->bind_param("sss",$table,$username,$ref_date);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_rupdate($table,$username,$rup,
-                        $rup_date){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("UPDATE ".$table." SET
-        rup_date = '$rup'
-        rup_date' WHERE username = '$username'");
-        $stmt->bind_param("ssss",$table,$username,$rup
-                          ,$rup_date);
-        if($stmt->execute()){
-            return true;
-        }else{
-            return false;
-        }
-		$result = $stmt->get_result();
-		return $result;
-	}
-function add_level($level_id,$level,$level_name,$cashout_point,$point_fig){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("INSERT INTO levels(level_id,level,level_name,cashout_point,point_fig) VALUES(?,?,?,?,?)");
-		$stmt->bind_param("sssii",$level_id,$level,$level_name,$cashout_point,$point_fig);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_level($level_id,$level,$level_name,$cashout_point,$point_fig){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("UPDATE levels SET level_name = '$level_name',cashout_point = '$cashout_point',point_fig = '$point_fig' WHERE level_id = '$level_id'");
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_coupon($id,$couponpage,$whatsapplink){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("UPDATE couponpage SET couponpage= '$couponpage',whatsapplink = '$whatsapplink' WHERE id = '$id'");
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-   function fetch_level_id($table,$level_id){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM ".$table." WHERE level_id='$level_id'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-   function fetch_level_idd($table,$id){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM ".$table." WHERE id='$id'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-    function update_tst($id,$testifier,$testimony){
-        //Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("UPDATE testimonypage SET testifier = '$testifier',testimony= '$testimony' WHERE id = '$id'");
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-    }
-function create_coupon($code,$level,$status,$expires){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("INSERT INTO couponcode(code,level,status,expires) VALUES(?,?,?,?)");
-		$stmt->bind_param("ssss",$code,$level,$status,$expires);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-  function fetch_coupon_code($table){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM ".$table." ORDER BY id DESC LIMIT 1");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-  function fetchComment($postid){
-		//Require Databse config file
-		require 'config.php';
-		//fetch all user
-		$stmt = $mysqli->prepare("SELECT * FROM comment WHERE  postid = '$postid'");
-		$stmt->execute();
-		$result = $stmt->get_result();
-		return $result;
-	}
-function create_about($about,$faq,$privacy,$terms){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("INSERT INTO abouts(about,faq,privacy,terms) VALUES(?,?,?,?)");
-		$stmt->bind_param("ssss",$about,$faq,$privacy,$terms);
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-function update_about($id,$about,$faq,$privacy,$terms){
-		//Require Databse config file
-		require 'config.php';
-		$stmt = $mysqli->prepare("UPDATE abouts SET about = '$about',faq = '$faq',privacy = '$privacy', terms = '$terms' WHERE id = '$id'");
-		if($stmt->execute()){
-			return true;
-		}else{
-			return false;
-		}
-		$result = $stmt->get_result();
-		return $result;
-	}
-////
+///////token
   function fetchtoken($username){
 		//Require Databse config file
 		require 'config.php';
@@ -1141,6 +523,30 @@ function update_token($token,$username){
 		//Require Databse config file
 		require 'config.php';
 		$stmt = $mysqli->prepare("UPDATE login_tokens SET token = '$token' WHERE username = '$username'");
+		if($stmt->execute()){
+			return true;
+		}else{
+			return false;
+		}
+		$result = $stmt->get_result();
+		return $result;
+	}
+	/////site settings
+	function fetchsiteset(){
+		//Require Databse config file
+		require 'config.php';
+        
+		//fetch all user
+		$stmt = $mysqli->prepare("SELECT * FROM settings ORDER BY id DESC LIMIT 1");
+		$stmt->execute();
+		$result = $stmt->get_result();
+ 
+		return $result;
+	}
+	function update_site_settings($token,$username){
+		//Require Databse config file
+		require 'config.php';
+		$stmt = $mysqli->prepare("UPDATE settings SET token = '$token' WHERE username = '$username'");
 		if($stmt->execute()){
 			return true;
 		}else{
